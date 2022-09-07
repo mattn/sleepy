@@ -1,16 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/gosuri/uiprogress"
 )
-
-const barWidth = 68
 
 func parseArg(s string) (time.Duration, error) {
 	d, err := time.ParseDuration(os.Args[1])
@@ -40,38 +38,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	s := d.Seconds()
+	s := d.Milliseconds()
+	w := int(s)
+	if w < 1 {
+		w = 1
+	}
 	uiprogress.Start()
 
-	if s < 1 {
-		bar := uiprogress.AddBar(1)
-		bar.Width = barWidth
-		bar.AppendCompleted()
-		time.Sleep(time.Duration(s * float64(time.Second)))
-		bar.Incr()
-		uiprogress.Stop()
-		return
-	}
-
-	bar := uiprogress.AddBar(int(math.Round(s)))
-	bar.Width = barWidth
+	bar := uiprogress.AddBar(w)
+	bar.Width = 68
 	bar.AppendCompleted()
 
-	t := time.NewTicker(time.Second)
-
+	t := time.NewTicker(time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), d)
+	defer cancel()
 loop:
 	for {
 		select {
 		case <-t.C:
-			s--
 			bar.Incr()
-			if s < 1 {
-				break loop
-			}
+		case <-ctx.Done():
+			break loop
 		}
 	}
 	t.Stop()
-	time.Sleep(time.Duration(s * float64(time.Second)))
-	bar.Incr()
+	bar.Set(w)
 	uiprogress.Stop()
 }
