@@ -2,13 +2,21 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/gosuri/uiprogress"
 )
+
+const name = "sleepy"
+
+const version = "0.0.1"
+
+var revision = "HEAD"
 
 func parseArg(s string) (time.Duration, error) {
 	d, err := time.ParseDuration(os.Args[1])
@@ -27,8 +35,22 @@ func parseArg(s string) (time.Duration, error) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
+	var showVersion bool
+
+	flag.BoolVar(&showVersion, "v", false, "Print the version")
+	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage: sleepy NUMBER[SUFFIX]...")
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	if showVersion {
+		fmt.Printf("%s %s (rev: %s/%s)\n", name, version, revision, runtime.Version())
+		return
+	}
+
+	if flag.NArg() != 1 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
