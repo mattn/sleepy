@@ -45,11 +45,11 @@ func main() {
 	}
 	uiprogress.Start()
 
-	bar := uiprogress.AddBar(w)
+	bar := uiprogress.AddBar(w / 100)
 	bar.Width = 68
 	bar.AppendCompleted()
 
-	t := time.NewTicker(time.Millisecond)
+	t := time.NewTicker(100 * time.Millisecond)
 	ctx, cancel := context.WithTimeout(context.Background(), d)
 	defer cancel()
 loop:
