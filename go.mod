@@ -1,6 +1,6 @@
 module github.com/mattn/sleepy
 
-go 1.20
+go 1.19
 
 require github.com/gosuri/uiprogress v0.0.1
 
