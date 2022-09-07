@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	d, err := parseArg(os.Args[1])
+	d, err := parseArg(flag.Arg(0))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
