@@ -61,13 +61,13 @@ func main() {
 	}
 
 	s := d.Milliseconds()
-	w := int(s)
+	w := int(s / 100)
 	if w < 1 {
 		w = 1
 	}
 	uiprogress.Start()
 
-	bar := uiprogress.AddBar(w / 100)
+	bar := uiprogress.AddBar(w)
 	bar.Width = 68
 	bar.AppendCompleted()
 
