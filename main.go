@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"runtime"
 	"strconv"
@@ -19,6 +20,9 @@ const version = "0.0.2"
 var revision = "HEAD"
 
 func parseArg(s string) (time.Duration, error) {
+	if s == "infinity" {
+		return time.Duration(math.MaxInt64), nil
+	}
 	d, err := time.ParseDuration(os.Args[1])
 	if err == nil {
 		return d, nil
@@ -69,7 +73,8 @@ func main() {
 
 	bar := uiprogress.AddBar(w)
 	bar.Width = 68
-	bar.AppendCompleted()
+	bar.AppendCompleted().PrependElapsed()
+	bar.TimeStarted = time.Now()
 
 	t := time.NewTicker(100 * time.Millisecond)
 	ctx, cancel := context.WithTimeout(context.Background(), d)
